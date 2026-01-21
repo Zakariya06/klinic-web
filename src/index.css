@@ -1,0 +1,398 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import "tailwindcss";
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+@theme inline {
+  --font-inter: "Inter", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+}
+
+@layer utilities {
+  .dashboard-heading {
+    @apply lg:text-3xl text-2xl font-semibold font-poppins;
+  }
+  .dashboard-subText {
+    @apply text-base font-normal;
+    color: #8b8d97;
+  }
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.font-montserrat {
+  font-family: "Montserrat", sans-serif;
+}
+.font-inter {
+  font-family: "Inter", sans-serif;
+}
+.font-poppins {
+  font-family: "Poppins", sans-serif;
+}
+
+/* VideoCall.css */
+
+.video-call-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* Remote video background */
+.remote-video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #1a1a1a;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Local video overlay */
+.local-video-container {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 120px;
+  height: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #333;
+  border: 2px solid white;
+  z-index: 50;
+}
+
+.local-video {
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.local-video-muted-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+}
+
+.muted-indicator {
+  text-align: center;
+  color: white;
+}
+
+.muted-text {
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+/* Waiting state */
+.waiting-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  text-align: center;
+}
+
+.waiting-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.waiting-text {
+  color: #999;
+  font-size: 16px;
+  margin-top: 16px;
+}
+
+/* Remote video container */
+.remote-video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1a1a1a;
+  z-index: 1;
+}
+
+.connected-indicator {
+  position: absolute;
+  bottom: 140px;
+  left: 20px;
+  background-color: rgba(0, 255, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  z-index: 70;
+}
+
+/* Control buttons */
+.control-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  padding: 30px 40px;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+}
+
+.control-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.control-button:hover {
+  background-color: #444;
+}
+
+.control-button.muted {
+  background-color: #666;
+}
+
+.control-button.end-call-button {
+  background-color: #ff4444;
+}
+
+.control-button.end-call-button:hover {
+  background-color: #ff5555;
+}
+
+.control-button.retry-video-button {
+  background-color: #007aff;
+}
+
+.control-button.retry-video-button:hover {
+  background-color: #0088ff;
+}
+
+/* Connection status */
+.connection-status {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 6px 12px;
+  border-radius: 20px;
+  z-index: 60;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.status-text {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* User role indicator */
+.user-role-indicator {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 6px 12px;
+  border-radius: 6px;
+  z-index: 60;
+}
+
+.role-text {
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Error screen */
+.error-container,
+.loading-container,
+.permissions-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #000;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-message {
+  color: #fff;
+  font-size: 16px;
+  margin: 20px 0;
+  text-align: center;
+  max-width: 600px;
+}
+
+.loading-title,
+.permissions-title {
+  color: #fff;
+  font-size: 18px;
+  margin: 20px 0 10px 0;
+  font-weight: bold;
+}
+
+.loading-subtitle,
+.permissions-subtitle {
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 30px;
+  max-width: 400px;
+}
+
+.retry-button,
+.cancel-button {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.retry-button {
+  background-color: #ff4444;
+  margin-bottom: 10px;
+}
+
+.retry-button:hover {
+  background-color: #ff5555;
+}
+
+.cancel-button {
+  background-color: #666;
+}
+
+.cancel-button:hover {
+  background-color: #777;
+}
+
+.button-text {
+  color: #fff;
+}
+
+/* Add these styles to your global CSS or component CSS file */
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pulse-animation {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes dotPulse {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+}
+
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #8b5cf6; /* violet-500 */
+  border-radius: 9999px;
+  margin: 0 2px;
+  animation: dotPulse 1.2s infinite ease-in-out;
+}
+
+.delay-0 {
+  animation-delay: 0ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-400 {
+  animation-delay: 400ms;
+}

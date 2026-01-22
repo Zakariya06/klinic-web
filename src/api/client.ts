@@ -4,7 +4,7 @@ import axios from "axios";
 // In development, use relative URLs to leverage Vite proxy 
 export const baseUrl = import.meta.env.PROD
   ? import.meta.env.VITE_TEST_BE_URL ||
-    "https://klinicapi-q59d3v24.b4a.run/api/v1/user"
+    "https://klinic-api-467097446026.europe-west1.run.app"
   : "";
 console.log("Base URL:", baseUrl || "Using Vite proxy");
 const apiClient = axios.create({

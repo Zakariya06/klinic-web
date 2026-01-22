@@ -55,17 +55,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           }}
         >
           {isUser ? (
-            <p className="text-white text-base leading-6 font-medium w-fit">
+            <div className="text-white text-base leading-6 font-medium w-fit">
               {message.content}
               {/* Timestamp */}
-              <div className="text-xs text-gray-200 text-left mt-0.5 font-medium ">
+              <p className="text-xs text-gray-200 text-left mt-0.5 font-medium ">
                 {new Date(message.timestamp).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: true,
                 })}
-              </div>
-            </p>
+              </p>
+            </div>
           ) : (
             <div className="p-3 w-full ">
               {parseXMLContent(message.content)}

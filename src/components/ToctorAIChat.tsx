@@ -95,7 +95,7 @@ What health concern would you like to discuss today? You can ask me about:
       const response = await apiClient.post("/api/v1/ai/chat", {
         message: userMessage.content,
         conversationId,
-      });
+      }); 
 
       if (response.data.success) {
         const assistantMessage: Message = {

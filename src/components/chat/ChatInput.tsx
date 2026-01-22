@@ -64,13 +64,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     <form onSubmit={handleSubmit} className="flex items-center justify-center">
       <div
         className={cn(
-          "max-w-4xl bg-white rounded-2xl border border-[#00B0AB] p-3 shadow-2xl w-full flex items-end justify-between gap-2 relative lg:flex-row flex-col",
+          "max-w-4xl bg-white rounded-2xl border border-[#00B0AB] p-3 shadow-2xl w-full  relative ",
           isFocused
             ? "border-violet-500 ring-2 ring-violet-200"
             : "border-[#00B0AB]",
         )}
       >
-        <div className="flex-1 relative">
+        <div className="flex-1 lg:w-auto w-full relative">
           <textarea
             ref={textareaRef}
             value={safeInputText}
@@ -82,7 +82,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             maxLength={1000}
             disabled={isLoading}
             rows={2}
-            className="w-full resize-none outline-none border-none text-base leading-relaxed"
+            className="w-full resize-none outline-none border-none text-base leading-relaxed field-sizing-content"
           />
 
           {/* Character count indicator */}
@@ -101,24 +101,26 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         </div>
 
-        {/* Voice Button */}
-        {onVoiceInput && (
-          <VoiceButton onPress={onVoiceInput} disabled={isLoading} />
-        )}
-
-        <button
-          type="submit"
-          onClick={onSendMessage}
-          disabled={!safeInputText.trim() || isLoading}
-          className="flex items-center justify-center bg-black text-white rounded-full w-10 h-10 hover:bg-black/50 disabled:bg-black/50 transition-colors duration-300 cursor-pointer"
-          aria-label="Send message"
-        >
-          {isLoading ? (
-            <AiOutlineLoading3Quarters className="text-white animate-spin" />
-          ) : (
-            <FaArrowUp className="text-white" />
+        <div className="flex items-center justify-end gap-2">
+          {/* Voice Button */}
+          {onVoiceInput && (
+            <VoiceButton onPress={onVoiceInput} disabled={isLoading} />
           )}
-        </button>
+
+          <button
+            type="submit"
+            onClick={onSendMessage}
+            disabled={!safeInputText.trim() || isLoading}
+            className="flex items-center justify-center bg-black text-white rounded-full w-10 h-10 hover:bg-black/50 disabled:bg-black/50 transition-colors duration-300 cursor-pointer"
+            aria-label="Send message"
+          >
+            {isLoading ? (
+              <AiOutlineLoading3Quarters className="text-white animate-spin" />
+            ) : (
+              <FaArrowUp className="text-white" />
+            )}
+          </button>
+        </div>
       </div>
     </form>
   );

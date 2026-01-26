@@ -11,7 +11,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://klinic-api-467097446026.europe-west1.run.app',
+        // target: 'https://klinic-api-467097446026.europe-west1.run.app',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false, 
       },

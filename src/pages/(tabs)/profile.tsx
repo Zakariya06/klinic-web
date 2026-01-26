@@ -187,12 +187,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleLogout = async () => {
-    localStorage.removeItem("token");
-    sessionStorage.clear();
-    setUser(null);
-    navigate("/login");
-  };
+ 
 
   const handleUpdateBasicInfo = async () => {
     try {
@@ -970,8 +965,7 @@ const Profile: React.FC = () => {
       <div>
         {/* Header Section */}
         <ProfileHeader
-          userData={user}
-          onLogout={handleLogout}
+          userData={user} 
           onProfilePicturePress={handleProfilePicturePress}
           setIsEditingBasicInfo={setIsEditingBasicInfo}
         />

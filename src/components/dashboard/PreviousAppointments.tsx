@@ -67,7 +67,7 @@ const PreviousAppointments: React.FC<PreviousAppointmentsProps> = ({
   );
 
   return (
-    <div className="mb-8">
+    <div>
       {/* List / Empty State */}
       {previousAppointments?.appointments &&
       previousAppointments.appointments.length > 0 ? (

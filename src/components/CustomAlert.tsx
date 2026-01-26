@@ -61,7 +61,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center px-6 z-50 animate-fadeIn">
+    <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex justify-center items-center px-6 z-50 animate-fadeIn">
       <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl max-h-[80vh] overflow-hidden">
         {/* Header with Icon */}
         <div className="flex flex-col items-center pt-8 pb-4">
@@ -93,8 +93,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
                 buttons[0].onPress?.();
                 onClose?.();
               }}
-              className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors ${getButtonStyle(
-                buttons[0].style || "default"
+              className={`w-full py-4 cursor-pointer rounded-xl font-semibold text-lg transition-colors ${getButtonStyle(
+                buttons[0].style || "default",
               )}`}
             >
               {buttons[0].text}
@@ -109,8 +109,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
                     button.onPress?.();
                     onClose?.();
                   }}
-                  className={`flex-1 py-4 rounded-xl font-semibold transition-colors ${getButtonStyle(
-                    button.style || "default"
+                  className={`flex-1 cursor-pointer  py-4 rounded-xl font-semibold transition-colors ${getButtonStyle(
+                    button.style || "default",
                   )}`}
                 >
                   {button.text}
@@ -127,8 +127,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
                     button.onPress?.();
                     onClose?.();
                   }}
-                  className={`w-full py-4 rounded-xl font-semibold transition-colors ${getButtonStyle(
-                    button.style || "default"
+                  className={`w-full cursor-pointer  py-4 rounded-xl font-semibold transition-colors ${getButtonStyle(
+                    button.style || "default",
                   )}`}
                 >
                   {button.text}

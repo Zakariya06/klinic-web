@@ -29,6 +29,8 @@ export default function MainLayout() {
           },
         });
 
+        console.log("this is response", response.data);
+
         setUser(response.data);
       } catch (err) {
         console.error("Failed to load user:", err);

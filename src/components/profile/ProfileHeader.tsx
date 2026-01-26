@@ -17,7 +17,6 @@ interface ProfileHeaderProps {
     role: UserRole;
     profilePicture?: string;
   } | null;
-  onLogout: () => void;
   onProfilePicturePress: () => void;
   setIsEditingBasicInfo: (val: boolean) => void;
 }
@@ -32,7 +31,6 @@ const roleLabel = (role: UserRole) => {
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   userData,
-  onLogout,
   onProfilePicturePress,
   setIsEditingBasicInfo,
 }) => {

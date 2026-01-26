@@ -64,7 +64,7 @@ const CollectedSamples: React.FC<CollectedSamplesProps> = ({
   );
 
   return (
-    <div className="mb-8">
+    <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-[#45464E] font-medium text-lg ">
           Collected Samples

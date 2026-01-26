@@ -105,8 +105,7 @@ const UserDashboard: React.FC = () => {
   // useCallback to avoid stale closures
   const fetchDashboardData = useCallback(async () => {
     try {
-      const response = await apiClient.get("/api/v1/user/dashboard");
-      console.log("this is dashboard Data", response);
+      const response = await apiClient.get("/api/v1/user/dashboard"); 
       setDashboardData(response.data);
     } catch (error: any) {
       showAlert({
@@ -573,21 +572,15 @@ const UserDashboard: React.FC = () => {
 
         {/* Previous Lab Tests Card */}
         <div className="bg-white rounded-xl p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-[#45464E] font-medium text-lg ">
-              Previous Lab Tests
-            </h2>
-            <button
-              onClick={fetchAllLabReports}
-              className="flex items-center px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-lg hover:bg-indigo-100 transition-colors"
-            >
-              <FaClipboardList className="mr-2" />
-              View All Reports
-            </button>
-          </div>
-
           <PreviousLabTests
-            previousLabTests={previousLabTests}
+            previousLabTests={
+              previousLabTests
+                ? {
+                    ...previousLabTests,
+                    labTests: previousLabTests.labTests || [],
+                  }
+                : null
+            }
             formatAppointmentTime={formatAppointmentTime}
             onViewLabReport={viewLabReport}
             onViewLabPdfs={viewLabPdfs}

@@ -4,16 +4,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 
-import LandingPage from "@/pages/landing";
-import LoginScreen from "@/pages/(auth)/login";
-import RegisterScreen from "@/pages/(auth)/register";
-import Verify from "@/pages/(auth)/verify";
-
-import HomeScreen from "@/pages/(tabs)";
-import DoctorsScreen from "@/pages/(tabs)/doctors";
-import LaboratoriesScreen from "@/pages/(tabs)/laboratories";
-import MedicinesScreen from "@/pages/(tabs)/medicines";
-import Profile from "@/pages/(tabs)/profile";
+import LandingPage from "@/pages/landing"; 
 
 import DoctorDetails from "@/pages/doctors";
 import LaboratoryServiceDetails from "@/pages/laboratories";
@@ -26,6 +17,15 @@ import OrderDetailsScreen from "@/pages/orders/OrderDetails";
 import PublicRoute from "@/hoc/PublicRoute";
 import ProtectedRoute from "@/hoc/ProtectedRoute";
 import ToctorAIChat from "@/components/ToctorAIChat";
+import RoleMainLayout from "@/layouts/MainLayout";
+import Login from "@/pages/auth/login";
+import RegisterScreen from "@/pages/auth/register";
+import Verify from "@/pages/auth/verify";
+import HomeScreen from "@/pages/tabs";
+import DoctorsScreen from "@/pages/tabs/doctors";
+import LaboratoriesScreen from "@/pages/tabs/laboratories";
+import MedicinesScreen from "@/pages/tabs/medicines";
+import Profile from "@/pages/tabs/profile";
 
 // Import route guards
 
@@ -36,13 +36,13 @@ const AppRouter = () => {
         {/* Auth routes - only accessible when NOT logged in */}
         <Route element={<PublicRoute />}>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterScreen />} />
           <Route path="/verify" element={<Verify />} />
         </Route>
         {/* Protected main app routes - require authentication */}
         <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
+          <Route element={<RoleMainLayout />}>
             {/* Tabs */}
             <Route path="/dashboard" element={<HomeScreen />} />
             <Route path="/doctors" element={<DoctorsScreen />} />

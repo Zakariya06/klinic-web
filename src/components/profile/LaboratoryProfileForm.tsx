@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { IoAdd } from "react-icons/io5";
-import { MdMedicalServices } from "react-icons/md";
+import { MdCloudUpload, MdMedicalServices } from "react-icons/md";
 import { FaClock, FaRegClock, FaTimesCircle } from "react-icons/fa";
 
 import {
@@ -21,6 +21,10 @@ import type {
 interface LaboratoryProfileFormProps {
   availableCategories?: string[];
   onServiceCoverImagePick?: (serviceId: string) => void;
+
+  // ✅ NEW
+  onCoverImagePick?: () => void;
+  uploadingCoverImage?: boolean;
 }
 
 type TimePickerMode = "start" | "end";
@@ -38,10 +42,10 @@ const dayOptions = [
 const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
   availableCategories = [],
   onServiceCoverImagePick,
+  onCoverImagePick,
+  uploadingCoverImage = false,
 }) => {
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
-
-  // debounce timer ref
   const debounceTimerRef = useRef<number | null>(null);
 
   const {
@@ -54,9 +58,11 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
     laboratoryCity,
     laboratoryGoogleMapsLink,
     laboratoryServices,
+    coverImage, // ✅ lab cover
     isAvailable,
     availableDays,
     availableSlots,
+
     setLaboratoryName,
     setLaboratoryPhone,
     setLaboratoryEmail,
@@ -65,16 +71,20 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
     setLaboratoryPinCode,
     setLaboratoryCity,
     setLaboratoryGoogleMapsLink,
+
     setIsAvailable,
     toggleAvailableDay,
     addAvailableSlot,
     removeAvailableSlot,
+
     addLaboratoryService,
     updateLaboratoryService,
     removeLaboratoryService,
+
     addTest,
     updateTest,
     removeTest,
+
     prepareProfileData,
     setSavedValues,
     savedValues,
@@ -86,7 +96,6 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
     endpoint: "/api/v1/laboratory-profile",
   });
 
-  // changed flags (for highlight + autosave)
   const isNameChanged = laboratoryName !== savedValues.laboratoryName;
   const isPhoneChanged = laboratoryPhone !== savedValues.laboratoryPhone;
   const isEmailChanged = laboratoryEmail !== savedValues.laboratoryEmail;
@@ -96,12 +105,18 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
   const isCityChanged = laboratoryCity !== savedValues.laboratoryCity;
   const isGoogleMapsLinkChanged =
     laboratoryGoogleMapsLink !== savedValues.laboratoryGoogleMapsLink;
+
+  const isCoverImageChanged = coverImage !== savedValues.coverImage;
+
   const areServicesChanged =
     JSON.stringify(laboratoryServices) !==
     JSON.stringify(savedValues.laboratoryServices);
+
   const isAvailableChanged = isAvailable !== savedValues.isAvailable;
+
   const isAvailableDaysChanged =
     JSON.stringify(availableDays) !== JSON.stringify(savedValues.availableDays);
+
   const isAvailableSlotsChanged =
     JSON.stringify(availableSlots) !==
     JSON.stringify(savedValues.availableSlots);
@@ -115,17 +130,16 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
     isPinCodeChanged ||
     isCityChanged ||
     isGoogleMapsLinkChanged ||
+    isCoverImageChanged ||
     areServicesChanged ||
     isAvailableChanged ||
     isAvailableDaysChanged ||
     isAvailableSlotsChanged;
 
-  // Time slots
   const [timePickerMode, setTimePickerMode] = useState<TimePickerMode>("start");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  // Custom time picker modal (web)
   const [showCustomTimePicker, setShowCustomTimePicker] = useState(false);
   const [tempHour, setTempHour] = useState(9);
   const [tempMinute, setTempMinute] = useState(0);
@@ -164,8 +178,6 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
 
   const openCustomTimePicker = (mode: TimePickerMode) => {
     setTimePickerMode(mode);
-
-    // default to current time
     const now = new Date();
     let h = now.getHours();
     const m = now.getMinutes();
@@ -190,7 +202,6 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
     onServiceCoverImagePick?.(serviceId);
   };
 
-  // CRUD: services/tests (same logic)
   const autoSaveChanges = async () => {
     try {
       if (debounceTimerRef.current)
@@ -199,7 +210,6 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
       return await new Promise<boolean>((resolve) => {
         debounceTimerRef.current = window.setTimeout(async () => {
           try {
-            console.log("Auto-saving laboratory profile...");
             const profileData = prepareProfileData();
             const ok = await laboratoryProfileApi.updateDataSilent(profileData);
 
@@ -214,14 +224,13 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
                 laboratoryCity,
                 laboratoryGoogleMapsLink,
                 laboratoryServices,
-                coverImage: savedValues.coverImage,
+                coverImage, // ✅ FIX
                 isAvailable,
                 availableDays,
                 availableSlots,
               });
               resolve(true);
             } else {
-              console.error("Auto-save failed - API returned false");
               resolve(false);
             }
           } catch (e) {
@@ -267,10 +276,8 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
 
   const handleRemoveService = async (serviceId: string) => {
     try {
-      console.log(`Removing service with ID: ${serviceId}`);
       removeLaboratoryService(serviceId);
 
-      // immediately save (same as RN)
       const profileData = prepareProfileData();
       const result = await laboratoryProfileApi.updateData(profileData);
 
@@ -285,7 +292,7 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
           laboratoryCity,
           laboratoryGoogleMapsLink,
           laboratoryServices,
-          coverImage: savedValues.coverImage,
+          coverImage, // ✅ FIX
           isAvailable,
           availableDays,
           availableSlots,
@@ -333,7 +340,6 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
     }
   };
 
-  // autosave when fields change
   useEffect(() => {
     if (hasUnsavedChanges) autoSaveChanges();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -347,12 +353,12 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
     laboratoryCity,
     laboratoryGoogleMapsLink,
     laboratoryServices,
+    coverImage, // ✅ include cover changes
     isAvailable,
     availableDays,
     availableSlots,
   ]);
 
-  // cleanup timers
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current)
@@ -368,7 +374,6 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
   return (
     <div className="h-full w-full overflow-y-auto bg-white rounded-xl">
       <div className="p-4">
-        {/* Unsaved changes message */}
         {hasUnsavedChanges && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-3">
             <p className="text-sm text-red-600">
@@ -382,13 +387,12 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
         <div className="mb-6 rounded-xl border border-gray-200 bg-white p-3">
           <div className="flex items-center justify-between">
             <div className="text-base font-medium text-gray-800">
-              Available?
+              Available?{" "}
               {isAvailableChanged && (
                 <span className="ml-1 text-red-500">*</span>
               )}
             </div>
 
-            {/* Switch -> checkbox styled as toggle */}
             <label className="relative inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"
@@ -816,9 +820,110 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
             </div>
           )}
         </div>
+
+        {/* ✅ Lab Cover Image */}
+        <div
+          className={`mb-6 rounded-xl border bg-white p-4 shadow ${
+            isCoverImageChanged ? "border-red-400" : "border-gray-200"
+          }`}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-base font-medium text-gray-800">
+                Laboratory Cover Image{" "}
+                {isCoverImageChanged && (
+                  <span className="ml-1 text-red-500">*</span>
+                )}
+              </div>
+              <div className="text-sm text-gray-500">
+                This will be shown as your lab banner/cover.
+              </div>
+            </div>
+          </div>
+
+          {/* Dropzone / Preview */}
+          <div
+            className={[
+              "mt-4 relative w-full overflow-hidden rounded-xl",
+              coverImage
+                ? "border border-gray-200"
+                : "border-2 border-dashed border-gray-300 bg-gray-50",
+              uploadingCoverImage ? "opacity-70 pointer-events-none" : "",
+            ].join(" ")}
+            role="button"
+            tabIndex={0}
+            onClick={() => onCoverImagePick?.()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") onCoverImagePick?.();
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onCoverImagePick?.();
+            }}
+            aria-label="Upload laboratory cover image"
+          >
+            {!coverImage ? (
+              <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
+                <div className="h-14 w-14 rounded-full bg-indigo-50 flex items-center justify-center">
+                  <MdCloudUpload className="text-indigo-600" size={30} />
+                </div>
+
+                <p className="mt-4 text-sm font-medium text-gray-800">
+                  Click to upload cover image
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  PNG, JPG up to ~5–10MB (recommended wide banner)
+                </p>
+
+                <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white text-sm font-medium">
+                  <MdCloudUpload size={18} />
+                  {uploadingCoverImage ? "Uploading..." : "Upload Image"}
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                {/* Image only */}
+                <img
+                  src={coverImage}
+                  alt="Lab cover"
+                  className="w-full h-80 object-cover"
+                  loading="lazy"
+                />
+
+                {/* Overlay actions */}
+                <div className="absolute inset-0 bg-black/0 hover:bg-black/25 transition">
+                  <div className="absolute top-3 right-3 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onCoverImagePick?.();
+                      }}
+                      disabled={!onCoverImagePick || uploadingCoverImage}
+                      className="rounded-lg bg-white/90 backdrop-blur px-3 py-2 text-gray-900 text-sm font-medium shadow hover:bg-white disabled:opacity-60"
+                    >
+                      {uploadingCoverImage ? "Uploading..." : "Change"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Loading badge */}
+            {uploadingCoverImage && (
+              <div className="absolute bottom-3 left-3 rounded-lg bg-white/90 backdrop-blur px-3 py-2 text-sm text-gray-700 shadow">
+                Uploading...
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Add Service Modal */}
       <ServiceFormModal
         visible={showAddServiceModal}
         onClose={() => setShowAddServiceModal(false)}

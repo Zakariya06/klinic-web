@@ -30,7 +30,7 @@ export default function Addresses({
   disabled = false,
 }: AddressesProps) {
   const [selectedClinicIndex, setSelectedClinicIndex] = useState<number | null>(
-    null
+    null,
   );
 
   if (!clinics || clinics.length === 0) {
@@ -70,8 +70,8 @@ export default function Addresses({
         const cardClass = disabled
           ? "bg-gray-100 border-gray-200"
           : selected
-          ? "bg-gray-50 border-primary"
-          : "bg-gray-50 border-transparent";
+            ? "bg-gray-50 border-blue-600"
+            : "bg-gray-50 border-transparent";
 
         const addressLine2 = [
           clinic.clinicAddress?.city,
@@ -93,11 +93,11 @@ export default function Addresses({
             onClick={() => handleSelectClinic(index)}
             disabled={disabled}
             className={[
-              "mb-2 w-full rounded-lg border p-4 text-left",
+              "mb-2 w-full rounded-lg border p-4 text-left cursor-pointer",
               cardClass,
               disabled
-                ? "cursor-not-allowed opacity-80"
-                : "hover:border-gray-200 hover:bg-gray-50 transition",
+                ? "cursor-not-allowed opacity-80 "
+                : "  hover:bg-gray-50  transition",
             ].join(" ")}
             aria-disabled={disabled}
           >

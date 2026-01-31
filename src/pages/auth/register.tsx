@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import apiClient from "@/api/client";
+import { useNavigate, Link } from "react-router-dom"; 
 import { store } from "@/utils";
 import { useUserStore } from "@/store/userStore";
 
@@ -19,6 +18,7 @@ import { HiOutlineMail } from "react-icons/hi";
 import { FiPhoneCall } from "react-icons/fi";
 import { SlLockOpen } from "react-icons/sl";
 import logo from "@/assets/images/klinic_logo.jpeg";
+import apiClient from "@/api/client";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");

@@ -112,19 +112,29 @@ export default function DoctorList() {
         />
       </AnimatedModal>
 
-      {/* Doctors List */}
-      <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
-        {doctors.map((doctor) => (
-          <DoctorCard key={doctor._id} doctor={doctor} />
-        ))}
-
-        {/* Loading Footer */}
-        {isLoadingMore && (
-          <div className="flex justify-center py-4">
-            <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      {isLoading ? (
+        <>
+          <div className="flex justify-center items-center min-h-[80vh] py-10">
+            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <>
+          {/* Doctors List */}
+          <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+            {doctors.map((doctor) => (
+              <DoctorCard key={doctor._id} doctor={doctor} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Loading Footer */}
+      {isLoadingMore && (
+        <div className="flex justify-center py-4">
+          <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
 
       {/* Empty State */}
       {doctors.length === 0 && !isLoading && (

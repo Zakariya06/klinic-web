@@ -123,7 +123,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center flex-1">
-          <div className="font-bold text-base text-gray-800">{service.name}</div>
+          <div className="font-semibold lg:text-lg  text-base capitalize text-gray-800">{service.name}</div>
         </div>
 
         <div className="flex items-center">

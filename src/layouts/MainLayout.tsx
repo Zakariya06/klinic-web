@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
-import apiClient from "@/api/client";
+import { Outlet, useLocation } from "react-router-dom"; 
 import { useUserStore } from "@/store/userStore";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import apiClient from "@/api/client";
 
 export default function MainLayout() {
   const { setUser } = useUserStore();

@@ -1,6 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import apiClient from "@/api/client";
+import { useNavigate } from "react-router-dom"; 
 import { useUserStore } from "@/store/userStore";
 
 // Components (keep your existing ones, just make sure they are web-compatible)
@@ -9,6 +8,7 @@ import FormButton from "@/components/FormButton";
 import ErrorMessage from "@/components/ErrorMessage";
 import ChangeEmailPhoneModal from "@/components/ChangeEmailPhoneModal";
 import logo from "@/assets/images/klinic_logo.jpeg";
+import apiClient from "@/api/client";
 
 export default function Verify() {
   const [emailOtp, setEmailOtp] = React.useState("");

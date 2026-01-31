@@ -1,15 +1,42 @@
-import { create } from 'zustand';
+import { create } from "zustand";
+import type { AppRole } from "@/utils/roles";
 
-// Define the user store state type
-interface UserState {
+type UserStoreState = {
+  usersByRole: Partial<Record<AppRole, any>>;
+
   user: any | null;
-  setUser: (user: any | null) => void;
-  clearUser: () => void;
-}
+  userToken: string | null;
+  setUserForRole: (role: AppRole, user: any | null) => void;
+  getUserForRole: (role: AppRole) => any | null;
+  clearUserForRole: (role: AppRole) => void;
 
-// Create the user store
-export const useUserStore = create<UserState>((set) => ({
+  setUser: (user: any | null) => void;
+  setUserToken: (userToken: any | null) => void;
+  clearUser: () => void;
+};
+
+export const useUserStore = create<UserStoreState>((set, get) => ({
+  usersByRole: {},
   user: null,
+  userToken: null,
+
+  setUserForRole: (role, user) =>
+    set((s) => ({
+      usersByRole: { ...s.usersByRole, [role]: user },
+    })),
+
+  getUserForRole: (role) => get().usersByRole?.[role] ?? null,
+
+  clearUserForRole: (role) =>
+    set((s) => {
+      const copy = { ...s.usersByRole };
+      delete copy[role];
+      return { usersByRole: copy };
+    }),
+
   setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
-})); 
+ 
+  setUserToken: (userToken) => set({ userToken }),
+
+  clearUser: () => set({ user: null, userToken: null }),
+}));

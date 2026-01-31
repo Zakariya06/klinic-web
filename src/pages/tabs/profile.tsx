@@ -82,8 +82,11 @@ const Profile: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchUserData();
+    }
+  }, [user?._id]);
 
   const fetchUserData = async () => {
     try {

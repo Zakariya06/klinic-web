@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { cn } from "@/utils/utils";
 import { FaArrowUp } from "react-icons/fa";
 import { HiSparkles } from "react-icons/hi2";
@@ -8,10 +8,14 @@ import { MdRestaurant } from "react-icons/md";
 import { GiBrain } from "react-icons/gi";
 import { GoArrowRight } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import AiChat from "@/components/AiChat";
 
 const LandingPage = () => {
   const pageRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const [showChat, setShowChat] = useState(false);
+  const [question, setQuestion] = useState("");
 
   const scrollToBottom = () => {
     window.scrollTo({
@@ -62,6 +66,18 @@ const LandingPage = () => {
     },
   ];
 
+  if (showChat) {
+    return (
+      <AiChat
+        initialMessage={question}
+        onExit={() => {
+          setShowChat(false);
+          setQuestion("");
+        }}
+      />
+    );
+  }
+
   return (
     <div ref={pageRef}>
       <div className="min-h-screen bg-white">
@@ -85,7 +101,7 @@ const LandingPage = () => {
                 onClick={scrollToBottom}
                 className={cn(
                   buttonClassNames,
-                  "  text-[#00B0AB]  border-[#00B0AB] lg:block hidden"
+                  "  text-[#00B0AB]  border-[#00B0AB] lg:block hidden",
                 )}
               >
                 Get Started
@@ -158,13 +174,18 @@ const LandingPage = () => {
                 className="bg-white rounded-2xl border border-[#00B0AB] p-3 shadow-2xl w-full flex items-start justify-between gap-2"
               >
                 <textarea
-                  placeholder="Type Here Patient Details"
-                  className="flex-1 h-auto max-h-auto border-0 outline-none resize-none text-sm font-medium bg-transparent placeholder:text-gray-400 text-black leading-relaxed"
                   rows={3}
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="Type patient details..."
+                  className="flex-1 outline-none resize-none"
                 />
                 <button
-                  onClick={redirectToLogin}
-                  className="flex items-center justify-center bg-black text-white rounded-full w-10 h-10 hover:bg-black/85 transition-colors duration-300 cursor-pointer"
+                  onClick={() => {
+                    if (!question.trim()) return;
+                    setShowChat(true);
+                  }}
+                  className="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center"
                 >
                   <FaArrowUp />
                 </button>

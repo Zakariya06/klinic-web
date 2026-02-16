@@ -97,15 +97,10 @@ const UserDashboard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleRatingSubmitted]);
 
-  // Add handler for AI chat
-  const handleOpenAIChat = () => {
-    navigate("/chat-ai");
-  };
-
   // useCallback to avoid stale closures
   const fetchDashboardData = useCallback(async () => {
     try {
-      const response = await apiClient.get("/api/v1/user/dashboard"); 
+      const response = await apiClient.get("/api/v1/user/dashboard");
       setDashboardData(response.data);
     } catch (error: any) {
       showAlert({
@@ -389,6 +384,11 @@ const UserDashboard: React.FC = () => {
     return true;
   };
 
+  // Add handler for AI chat
+  const handleOpenAIChat = () => {
+    navigate("/chat-ai");
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -638,13 +638,6 @@ const UserDashboard: React.FC = () => {
         onViewLabPdfs={viewLabPdfs}
         onViewLabNotes={viewLabNotes}
         formatAppointmentTime={formatAppointmentTime}
-      />
-
-      {/* AI Chat Modal */}
-
-      <ToctorFloatingButton
-        onPress={handleOpenAIChat}
-        className="fixed bottom-4 right-4 z-50 shadow-xl hover:shadow-2xl transition-shadow"
       />
 
       <AlertComponent />

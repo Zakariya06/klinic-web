@@ -83,6 +83,7 @@ ${userMessage}
 
       return response.text;
     } catch (error) {
+      console.log("Gemini API Error:::", error);
       return "⚠️ Unable to generate medical advice at the moment.";
     }
   };

@@ -8,7 +8,7 @@ import { MdRestaurant } from "react-icons/md";
 import { GiBrain } from "react-icons/gi";
 import { GoArrowRight } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
-import AiChat from "@/components/AiChat";
+import { AiChat } from "@/components/AiChat";
 
 const LandingPage = () => {
   const pageRef = useRef<HTMLDivElement>(null);
@@ -182,7 +182,7 @@ const LandingPage = () => {
                 />
                 <button
                   onClick={() => {
-                    if (!question.trim()) return;
+                    if (!question.trim()) return alert("Please Add a message");
                     setShowChat(true);
                   }}
                   className="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center"

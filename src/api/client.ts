@@ -5,7 +5,7 @@ const baseURL =
   "https://klinic-api-467097446026.europe-west1.run.app";
 
 const apiClient = axios.create({
-  baseURL, 
+  baseURL,
 });
 
 apiClient.interceptors.request.use((config) => {
@@ -22,5 +22,22 @@ apiClient.interceptors.request.use((config) => {
 
   return config;
 });
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.log("Unauthorized - Token expired");
+      alert("User unAuthorized Login again");
+      // Remove expired token
+      localStorage.removeItem("token");
+
+      // Redirect to login
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 export default apiClient;

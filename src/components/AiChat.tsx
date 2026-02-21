@@ -1,177 +1,332 @@
-import { GoogleGenAI } from "@google/genai";
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import { Copy, Send, Trash2, Download, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { FaCopy } from "react-icons/fa";
+import Spinner from "./ui/Spinner";
+import { GoogleGenAI } from "@google/genai";
+import { boolean } from "zod";
 
 interface Message {
-  role: "user" | "ai";
+  id: string | number;
+  role: "user" | "assistant";
   content: string;
 }
 
-interface Props {
+export function AiChat({
+  initialMessage,
+  onExit,
+}: {
   initialMessage: string;
   onExit: () => void;
-}
-
-const AiChat: React.FC<Props> = ({ initialMessage, onExit }) => {
+}) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [input, setInput] = useState(initialMessage || "");
+  const [isLoading, setIsLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
+  const [isCopy, setIsCopy] = useState<null | number | string>(null);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const ai = new GoogleGenAI({
     apiKey: import.meta.env.VITE_GEMINI_API_KEY,
   });
 
-  const callGemini = async (text: string) => {
-    try {
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [{ parts: [{ text }] }],
-      });
-      return (
-        response?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "No response from AI."
-      );
-    } catch (err) {
-      console.error("Gemini call error:", err);
-      return "Error connecting to AI.";
-    }
-  };
-
-  const sendMessage = async (text: string) => {
-    if (!text.trim()) return;
-    const updated = [...messages, { role: "user" as const, content: text }];
-    setMessages(updated);
-    setInput("");
-    setLoading(true);
-    const aiReply = await callGemini(text);
-    setMessages([...updated, { role: "ai" as const, content: aiReply }]);
-    setLoading(false);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    if (initialMessage.trim()) sendMessage(initialMessage);
-  }, []);
+    scrollToBottom();
+  }, [messages, streamingText]);
 
-  const handleCopy = (text: string) => {
+  // 🩺 Doctor Structured Response
+  const generateMedicalResponse = async (userMessage: string) => {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `
+You are a professional AI medical assistant.
+
+Follow this structure strictly:
+
+## 🩺 Possible Causes
+- Bullet points only
+
+## 💊 Recommended Actions
+- Bullet points only
+
+## 🚨 When To See A Doctor
+- Bullet points only
+
+## ⚠️ Disclaimer
+This is not a medical diagnosis. Consult a licensed healthcare professional.
+
+Keep the answer under 250 words.
+Be calm, professional, and medically responsible.
+
+Patient Question:
+${userMessage}
+`,
+              },
+            ],
+          },
+        ],
+      });
+
+      return response.text;
+    } catch (error) {
+      return "⚠️ Unable to generate medical advice at the moment.";
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now(),
+      role: "user",
+      content: input,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+    setStreamingText("");
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+
+    try {
+      const responseText = await generateMedicalResponse(input);
+
+      if (!responseText) return;
+
+      const assistantMessage: Message = {
+        id: Date.now(),
+        role: "assistant",
+        content: "",
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      // ✨ Streaming Effect
+      let currentText = "";
+      for (let i = 0; i < responseText.length; i++) {
+        currentText += responseText[i];
+        setStreamingText(currentText);
+        await new Promise((resolve) => setTimeout(resolve, 15));
+      }
+
+      setStreamingText("");
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMessage.id
+            ? { ...msg, content: responseText }
+            : msg,
+        ),
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    setTimeout(() => {
+      setIsCopy(null);
+    }, 3000);
+  };
+
+  const handleClearChat = () => {
+    if (messages.length > 0 && confirm("Clear chat history?")) {
+      setMessages([]);
+      setStreamingText("");
+    }
+  };
+
+  const handleExportChat = () => {
+    const chatText = messages
+      .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
+      .join("\n\n");
+
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(chatText),
+    );
+    element.setAttribute("download", "medical-chat.txt");
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="flex flex-col h-screen bg-slate-50 text-slate-800">
       {/* Header */}
-      <div className="p-4 bg-white shadow flex justify-between items-center">
-        <h2 className="text-xl font-semibold">AI Doctor</h2>
-        <button
-          onClick={onExit}
-          className="text-sm text-red-500 hover:underline"
-        >
-          Close
-        </button>
+      <div className="border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+        <div className="max-w-4xl lg:mx-auto px-4 py-4 flex lg:items-center justify-between lg:flex-row flex-col gap-2">
+          <div className="flex items-center shrink-0 gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md">
+              <span className="text-white text-lg">🩺</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">AI Medical Assistant</h1>
+              <p className="text-xs text-slate-500">
+                For informational purposes only
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flew-wrap gap-2">
+            {messages.length > 0 && (
+              <>
+                <button
+                  onClick={handleExportChat}
+                  className="flex items-center gap-1 px-3 py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-100 cursor-pointer transition"
+                >
+                  <Download className="w-4 h-4" />
+                  Export
+                </button>
+                <button
+                  onClick={handleClearChat}
+                  className="flex items-center gap-1 px-3 py-2 text-sm border border-slate-300 rounded-lg cursor-pointer hover:bg-slate-100 transition"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear
+                </button>
+              </>
+            )}
+            <button
+              onClick={onExit}
+              className="flex items-center gap-1 px-3 py-2 text-sm border border-slate-300 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+              Back
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Chat messages */}
-      <div className="flex-1 container mx-auto overflow-y-auto p-6 space-y-4">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`relative p-4 rounded-xl break-words ${
-              msg.role === "user"
-                ? "bg-blue-600 text-white ml-auto max-w-5xl"
-                : "bg-white shadow max-w-7xl"
-            }`}
-          >
-            {/* Copy button */}
-            <button
-              onClick={() => handleCopy(msg.content)}
-              className={`absolute top-2 right-2 p-1 rounded hover:bg-gray-200 transition ${
-                msg.role === "user"
-                  ? "text-white hover:bg-blue-500"
-                  : "text-gray-500"
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              <FaCopy />
-            </button>
+              <div
+                className={`max-w-2xl rounded-2xl px-5 py-4 shadow-sm ${
+                  message.role === "user"
+                    ? "bg-blue-600 text-white rounded-br-none"
+                    : "bg-white border border-slate-200 rounded-bl-none"
+                }`}
+              >
+                {message.role === "assistant" ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h2: ({ children }) => (
+                        <h2 className="text-lg font-semibold mt-3 mb-2">
+                          {children}
+                        </h2>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="list-disc list-inside mb-3 space-y-1">
+                          {children}
+                        </ul>
+                      ),
+                      p: ({ children }) => <p className="mb-2">{children}</p>,
+                    }}
+                  >
+                    {streamingText && message.content === ""
+                      ? streamingText
+                      : message.content}
+                  </ReactMarkdown>
+                ) : (
+                  <p>{message.content}</p>
+                )}
 
-            {/* Markdown rendering */}
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                h1: ({ node, ...props }: any) => (
-                  <h1 className="my-2 text-2xl font-bold" {...props} />
-                ),
-                h2: ({ node, ...props }: any) => (
-                  <h2 className="my-2 text-xl font-semibold" {...props} />
-                ),
-                h3: ({ node, ...props }: any) => (
-                  <h3 className="my-2 text-lg font-semibold" {...props} />
-                ),
-                h4: ({ node, ...props }: any) => (
-                  <h4 className="my-2 font-medium" {...props} />
-                ),
-                h5: ({ node, ...props }: any) => (
-                  <h5 className="my-2 font-medium" {...props} />
-                ),
-                h6: ({ node, ...props }: any) => (
-                  <h6 className="my-2 font-medium" {...props} />
-                ),
-                p: ({ node, ...props }: any) => <p className="my-2" {...props} />,
-                hr: ({ node, ...props }: any) => (
-                  <hr className="my-2 border-gray-300" {...props} />
-                ),
-                ul: ({ node, ...props }: any) => (
-                  <ul className="my-2 list-disc list-inside" {...props} />
-                ),
-                ol: ({ node, ...props }: any) => (
-                  <ol className="my-2 list-decimal list-inside" {...props} />
-                ),
-                table: ({ node, ...props }: any) => (
-                  <table
-                    className="my-2 border border-gray-300 w-full text-sm border-collapse"
-                    {...props}
-                  />
-                ),
-                th: ({ node, ...props }: any) => (
-                  <th className="border p-2 bg-gray-200" {...props} />
-                ),
-                td: ({ node, ...props }: any) => (
-                  <td className="border p-2" {...props} />
-                ),
-                blockquote: ({ node, ...props }: any) => (
-                  <blockquote
-                    className="my-2 border-l-4 pl-4 italic text-gray-600"
-                    {...props}
-                  />
-                ),
-                br: () => <br className="my-2" />,
-              }}
-            >
-              {msg.content}
-            </ReactMarkdown>
-          </div>
-        ))}
-        {loading && <div className="text-gray-400">AI typing...</div>}
+                {message.role === "assistant" && message.content && (
+                  <button
+                    onClick={() => {
+                      setIsCopy(message.id);
+                      copyToClipboard(message.content);
+                    }}
+                    className="mt-3 text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1 cursor-pointer"
+                  >
+                    <Copy className="w-3 h-3" />
+                    {isCopy === message.id ? "Copied" : "Copy"}
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {isLoading && !streamingText && (
+            <div className="text-slate-500 text-sm">
+              AI is analyzing your symptoms...
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      {/* Input box */}
-      <div className="p-4 bg-white border-t flex gap-3">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask follow-up question..."
-          className="flex-1 border rounded-xl px-4 py-2 outline-none"
-        />
-        <button
-          onClick={() => sendMessage(input)}
-          className="bg-black text-white px-6 rounded-xl"
-        >
-          Send
-        </button>
+      {/* Input */}
+      <div className="bg-white border-t border-slate-200 sticky bottom-0">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <form
+            onSubmit={handleSendMessage}
+            className="flex gap-3 rounded-xl border border-slate-300 bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-500"
+          >
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage(e as any);
+                }
+              }}
+              placeholder="Describe your symptoms..."
+              className="min-h-12 max-h-32 w-full resize-none p-3 outline-none"
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="h-12 w-12 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              {isLoading ? (
+                <Spinner className="w-5 h-5" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
+            </button>
+          </form>
+
+          <p className="text-xs text-slate-400 mt-2">
+            This AI provides general health information only. Always consult a
+            licensed medical professional.
+          </p>
+        </div>
       </div>
     </div>
   );
-};
-
-export default AiChat;
+}

@@ -10,12 +10,10 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  console.log("this is local token", token);
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
     config.headers["Content-Type"] = "application/json";
-    console.log("Token send successfully ........");
   } else {
     console.log("Token Failed ........");
   }

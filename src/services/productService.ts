@@ -62,7 +62,7 @@ export const productService = {
       
       const response = await apiClient.get(`/api/v1/products?${queryString}`);
       
-      console.log('API Response:', JSON.stringify(response.data));
+      // console.log('API Response:', JSON.stringify(response.data));
       
       if (!response.data.data?.products || response.data.data.products.length === 0) {
         console.warn('No products found in the response. Using fallback data.');

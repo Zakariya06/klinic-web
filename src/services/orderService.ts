@@ -104,7 +104,7 @@ export const orderService = {
       
       const response = await apiClient.get(url);
       
-      console.log('API Response:', JSON.stringify(response.data, null, 2));
+      // console.log('API Response:', JSON.stringify(response.data, null, 2));
       
       if (!response.data.success) {
         console.error('API returned error:', response.data);
@@ -172,7 +172,7 @@ export const orderService = {
       
       const response = await apiClient.get(url);
       
-      console.log('API Response:', JSON.stringify(response.data, null, 2));
+      // console.log('API Response:', JSON.stringify(response.data, null, 2));
       
       if (!response.data.success) {
         console.error('API returned error:', response.data);

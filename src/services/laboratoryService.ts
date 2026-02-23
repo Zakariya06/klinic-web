@@ -134,7 +134,7 @@ export const laboratoryService = {
       
       const response = await apiClient.get(`/api/v1/laboratories?${queryString}`);
       
-      console.log('API Response:', response.data);
+      // console.log('API Response:', response.data);
       
       if (!response.data.laboratories || response.data.laboratories.length === 0) {
         console.warn('No laboratories found in the response. Using fallback data.');

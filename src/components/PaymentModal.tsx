@@ -19,12 +19,18 @@ const loadRazorpayScript = (): Promise<void> => {
   if (window.Razorpay) return Promise.resolve();
 
   return new Promise((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[src="${RAZORPAY_SCRIPT_SRC}"]`,
+    );
     if (existing) {
       existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Failed to load Razorpay script")), {
-        once: true,
-      });
+      existing.addEventListener(
+        "error",
+        () => reject(new Error("Failed to load Razorpay script")),
+        {
+          once: true,
+        },
+      );
       return;
     }
 
@@ -112,7 +118,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         setLoading(false);
       }
     },
-    [appointmentData.appointmentId, appointmentData.appointmentType, navigate, onClose, onPaymentSuccess, showAlert]
+    [
+      appointmentData.appointmentId,
+      appointmentData.appointmentType,
+      navigate,
+      onClose,
+      onPaymentSuccess,
+      showAlert,
+    ],
   );
 
   const handlePayNow = useCallback(async () => {
@@ -129,11 +142,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         return;
       }
 
-      const orderResponse = await apiClient.post("/api/v1/create-payment-order", {
-        appointmentId: appointmentData.appointmentId,
-        appointmentType: appointmentData.appointmentType,
-        amount: appointmentData.amount,
-      });
+      const orderResponse = await apiClient.post(
+        "/api/v1/create-payment-order",
+        {
+          appointmentId: appointmentData.appointmentId,
+          appointmentType: appointmentData.appointmentType,
+          amount: appointmentData.amount,
+        },
+      );
 
       const { orderId, amount, currency } = orderResponse.data as {
         orderId: string;
@@ -143,7 +159,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       await loadRazorpayScript();
 
-      if (!window.Razorpay) throw new Error("Razorpay script loaded but Razorpay not available");
+      if (!window.Razorpay)
+        throw new Error("Razorpay script loaded but Razorpay not available");
 
       const options = {
         key,
@@ -195,7 +212,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const handlePayLater = useCallback(() => {
     showAlert({
       title: "Appointment Confirmed",
-      message: "Your appointment has been booked. You can pay during the consultation.",
+      message:
+        "Your appointment has been booked. You can pay during the consultation.",
       type: "success",
       buttons: [
         {
@@ -232,7 +250,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
           {/* Header */}
           <div className="mb-4 flex items-center justify-between">
-            <div className="text-xl font-bold text-gray-900">Payment Options</div>
+            <div className="text-xl font-bold text-gray-900">
+              Payment Options
+            </div>
             <button
               type="button"
               onClick={onClose}
@@ -249,7 +269,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="mb-2 text-lg font-semibold text-gray-900">
               {appointmentData.appointmentType === "doctor"
                 ? `Dr. ${appointmentData.doctorName ?? ""}`
-                : appointmentData.serviceName ?? ""}
+                : (appointmentData.serviceName ?? "")}
             </div>
 
             <div className="mb-1 text-sm text-gray-600">
@@ -258,7 +278,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 : `Collection: ${appointmentData.collectionType === "lab" ? "Lab Visit" : "Home Collection"}`}
             </div>
 
-            <div className="text-lg font-bold text-sky-600">Amount: ₹{appointmentData.amount}</div>
+            <div className="text-lg font-bold text-sky-600">
+              Amount: ₹{appointmentData.amount}
+            </div>
           </div>
 
           {/* Payment Options */}
@@ -283,7 +305,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 ) : (
                   <>
                     <FaCreditCard className="h-5 w-5" />
-                    <span className="ml-2 text-lg">Pay Now ₹{appointmentData.amount}</span>
+                    <span className="ml-2 text-lg">
+                      Pay Now ₹{appointmentData.amount}
+                    </span>
                   </>
                 )}
               </button>
@@ -326,12 +350,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               >
                 <FaClock className="h-5 w-5 text-gray-600" />
                 <span className="ml-2 text-lg">
-                  Pay During {appointmentData.appointmentType === "doctor" ? "Consultation" : "Visit"}
+                  Pay During{" "}
+                  {appointmentData.appointmentType === "doctor"
+                    ? "Consultation"
+                    : "Visit"}
                 </span>
               </button>
 
               <div className="mt-3 text-center text-xs text-gray-500">
-                You can pay online now for convenience or pay during your appointment
+                You can pay online now for convenience or pay during your
+                appointment
               </div>
             </div>
           )}

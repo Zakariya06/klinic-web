@@ -151,6 +151,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         },
       );
 
+      console.log("Order Response:", orderResponse.data);
+      console.log("Razorpay Key:", key);
+
       const { orderId, amount, currency } = orderResponse.data as {
         orderId: string;
         amount: number;

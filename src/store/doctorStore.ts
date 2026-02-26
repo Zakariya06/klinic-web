@@ -24,8 +24,7 @@ interface DoctorStore {
 }
 
 const initialFilters: DoctorSearchFilters = {
-  page: 1,
-  limit: 2,
+  page: 1, 
 };
 
 const initialState = {

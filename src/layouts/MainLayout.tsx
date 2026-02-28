@@ -4,11 +4,9 @@ import { useUserStore } from "@/store/userStore";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import apiClient from "@/api/client";
-import ToctorFloatingButton from "@/components/ToctorFloatingButton";
 
 export default function MainLayout() {
-  const { setUser } = useUserStore();
-  const navigate = useNavigate();
+  const { setUser } = useUserStore(); 
 
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [isShowSidebar, setIsShowSidebar] = useState(false);
@@ -55,11 +53,6 @@ export default function MainLayout() {
     setIsShowSidebar(false);
   }, [location.pathname]);
 
-  // Add handler for AI chat
-  const handleOpenAIChat = () => {
-    navigate("/chat-ai");
-  };
-
   if (!isLoadingComplete) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -80,11 +73,6 @@ export default function MainLayout() {
         </main>
       </div>
       {/* AI Chat Modal */}
-
-      <ToctorFloatingButton
-        onPress={handleOpenAIChat}
-        className="fixed bottom-4 right-4 z-50 shadow-xl hover:shadow-2xl transition-shadow"
-      />
     </>
   );
 }

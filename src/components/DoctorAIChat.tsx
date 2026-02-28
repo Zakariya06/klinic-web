@@ -15,7 +15,7 @@ interface Message {
   isStreaming?: boolean;
 }
 
-const ToctorAIChat: React.FC = () => {
+const DoctorAIChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -198,4 +198,4 @@ Error details: ${error instanceof Error ? error.message : "Unknown error"}
   );
 };
 
-export default ToctorAIChat;
+export default DoctorAIChat;

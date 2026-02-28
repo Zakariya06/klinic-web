@@ -15,7 +15,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ onClose }) => {
         </div>
         <div>
           <h1 className="lg:text-2xl text-xl font-semibold font-poppins">
-            Toctor AI
+            Doctor AI
           </h1>
           <div
             className="flex items-center"

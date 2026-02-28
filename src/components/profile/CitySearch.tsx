@@ -16,7 +16,7 @@ const CitySearch: React.FC<CitySearchProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Filter cities based on search term using regex (same logic)
   const filteredCities = useMemo(() => {
@@ -36,105 +36,97 @@ const CitySearch: React.FC<CitySearchProps> = ({
     onCitySelect(city);
     setSearchTerm("");
     setShowDropdown(false);
-    inputRef.current?.blur();
   };
 
-  const closeDropdown = () => setShowDropdown(false);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setSearchTerm(text);
+    setShowDropdown(true);
+    if (!text) onCitySelect("");
+  };
 
-  // Close dropdown on outside click (web equivalent of TouchableWithoutFeedback)
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const handleClear = () => {
+    setSearchTerm("");
+    onCitySelect("");
+    setShowDropdown(true);
+  };
+
+  // Close dropdown when clicking outside the component
   useEffect(() => {
-    const onDocMouseDown = (e: MouseEvent) => {
-      if (!rootRef.current) return;
-      if (!rootRef.current.contains(e.target as Node)) {
-        closeDropdown();
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
       }
     };
-    document.addEventListener("mousedown", onDocMouseDown);
-    return () => document.removeEventListener("mousedown", onDocMouseDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <div ref={rootRef}>
+    <div ref={containerRef} className="relative">
       <label className="text-gray-700 font-medium text-base mb-2 block">
         City {isCityChanged && <span className="text-red-500 ml-1">*</span>}
       </label>
 
+      {/* Input container */}
       <div
         className={[
-          "border rounded-xl bg-white shadow-sm",
+          "flex items-center px-4 py-3.5 border rounded-xl bg-white shadow-sm",
           isCityChanged ? "border-red-400" : "border-gray-200",
         ].join(" ")}
       >
-        {/* Search input */}
-        <div className="flex items-center px-4 py-3.5">
-          <MdLocationCity
-            size={22}
-            className={isCityChanged ? "text-red-400" : "text-indigo-600"}
-          />
+        <MdLocationCity
+          size={22}
+          className={isCityChanged ? "text-red-400" : "text-indigo-600"}
+        />
 
-          <input
-            ref={inputRef}
-            value={selectedCity || searchTerm}
-            onChange={(e) => {
-              const text = e.target.value;
-              setSearchTerm(text);
-              setShowDropdown(true);
-              if (!text) onCitySelect("");
-            }}
-            onFocus={() => setShowDropdown(true)}
-            placeholder="Search for a city..."
-            className="ml-3 flex-1 text-gray-800 outline-none bg-transparent"
-          />
+        <input
+          value={selectedCity || searchTerm}
+          onChange={handleInputChange}
+          onFocus={() => setShowDropdown(true)}
+          placeholder="Search for a city..."
+          className="ml-3 flex-1 text-gray-800 outline-none bg-transparent"
+        />
 
-          {(selectedCity || searchTerm) && (
-            <button
-              type="button"
-              onClick={() => {
-                setSearchTerm("");
-                onCitySelect("");
-                setShowDropdown(true);
-                inputRef.current?.focus();
-              }}
-              className="p-1"
-              aria-label="Clear city"
-            >
-              <MdCancel size={18} className="text-gray-400" />
-            </button>
-          )}
-        </div>
-
-        {/* Results dropdown */}
-        {showDropdown && filteredCities.length > 0 && (
-          <div className="border-t border-gray-200 max-h-40 overflow-auto">
-            {filteredCities.slice(0, 10).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => handleCityPress(item)}
-                className="w-full text-left px-4 py-2 border-b border-gray-100 hover:bg-gray-50"
-              >
-                <span className="text-gray-800">{item}</span>
-              </button>
-            ))}
-
-            {filteredCities.length > 10 && (
-              <div className="text-xs text-center text-gray-500 py-1">
-                {filteredCities.length - 10} more results. Continue typing to
-                refine.
-              </div>
-            )}
-          </div>
-        )}
-
-        {showDropdown && filteredCities.length === 0 && searchTerm && (
-          <div className="border-t border-gray-200 p-3">
-            <div className="text-gray-500 text-center">
-              No matching cities found
-            </div>
-          </div>
+        {(selectedCity || searchTerm) && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="p-1"
+            aria-label="Clear city"
+          >
+            <MdCancel size={18} className="text-gray-400" />
+          </button>
         )}
       </div>
+
+      {/* Dropdown */}
+      {showDropdown && (
+        <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          {filteredCities.length > 0 ? (
+            filteredCities.slice(0, 10).map((city) => (
+              <button
+                key={city}
+                type="button"
+                onClick={() => handleCityPress(city)}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 transition-colors"
+              >
+                <span className="text-gray-800">{city}</span>
+              </button>
+            ))
+          ) : (
+            <div className="p-3 text-center text-gray-500">
+              No matching cities found
+            </div>
+          )}
+
+          {filteredCities.length > 10 && (
+            <div className="sticky bottom-0 text-xs text-center text-gray-500 py-1 bg-white border-t border-gray-100">
+              {filteredCities.length - 10} more results. Continue typing to refine.
+            </div>
+          )}
+        </div>
+      )}
 
       {selectedCity && (
         <div className="text-xs text-green-600 mt-1">

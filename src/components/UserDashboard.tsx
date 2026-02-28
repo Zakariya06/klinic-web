@@ -32,7 +32,7 @@ import {
 import RatingModal from "./RatingModal";
 import VideoCallModal from "./VideoCallModal";
 import ToctorFloatingButton from "./ToctorFloatingButton";
-import ToctorAIChat from "./ToctorAIChat";
+import ToctorAIChat from "./DoctorAIChat";
 import { TbRotate } from "react-icons/tb";
 import { HiOutlineDocumentArrowUp } from "react-icons/hi2";
 
@@ -101,6 +101,7 @@ const UserDashboard: React.FC = () => {
   const fetchDashboardData = useCallback(async () => {
     try {
       const response = await apiClient.get("/api/v1/user/dashboard");
+      console.log('this is dashboard data', response.data)
       setDashboardData(response.data);
     } catch (error: any) {
       showAlert({

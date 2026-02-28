@@ -8,9 +8,9 @@ const apiClient = axios.create({
   baseURL,
 });
 
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+const token = localStorage.getItem("token");
 
+apiClient.interceptors.request.use((config) => {
   if (token) {
     // Use `set` instead of replacing headers to satisfy Axios types
     config.headers = config.headers ?? {};
@@ -25,7 +25,7 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (token && error.response && error.response.status === 401) {
       console.log("Unauthorized - Token expired");
       alert("User unAuthorized Login again");
       // Remove expired token

@@ -21,8 +21,9 @@ import apiClient from "@/api/client";
 import { useCustomAlert } from "@/components/CustomAlert";
 import VideoCallModal from "@/components/VideoCallModal";
 import { TbRotate } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 
-interface Patient {
+export interface Patient {
   _id: string;
   name: string;
   email: string;
@@ -43,7 +44,7 @@ interface Patient {
   updatedAt?: string;
 }
 
-interface DoctorAppointment {
+export interface DoctorAppointment {
   _id: string;
   patient: Patient;
   timeSlot: string;
@@ -89,6 +90,8 @@ const DoctorDashboard: React.FC = () => {
   const [selectedVideoCallAppointment, setSelectedVideoCallAppointment] =
     useState<DoctorAppointment | null>(null);
   const { showAlert, AlertComponent } = useCustomAlert();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
@@ -830,9 +833,17 @@ const DoctorDashboard: React.FC = () => {
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-5">
           {/* Pending Appointments */}
           <div className="flex flex-col justify-between bg-white lg:p-4 p-2.5 rounded-xl shadow-xs">
-            <h2 className="text-[#45464E] font-medium text-lg mb-2">
-              Pending Appointments ({dashboardData?.totalPending || 0})
-            </h2>
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-[#45464E] font-medium text-lg">
+                Pending Appointments ({dashboardData?.totalPending || 0})
+              </h2>
+              <button
+                onClick={() => navigate("/doctor/upcoming-appointments")}
+                className="text-sm text-[#5570F1] hover:underline"
+              >
+                View All
+              </button>
+            </div>
 
             {filterAppointments(dashboardData?.pendingAppointments).length >
             0 ? (

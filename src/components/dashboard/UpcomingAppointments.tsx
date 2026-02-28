@@ -101,6 +101,8 @@ const UpcomingAppointments: React.FC<UpcomingAppointmentsProps> = ({
 
   const upcomingAppointments = dashboardData?.upcomingAppointments || [];
 
+  console.log("this is upcoming Appointments", upcomingAppointments);
+
   if (cardMode) {
     return (
       <div>

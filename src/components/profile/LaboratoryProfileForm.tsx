@@ -768,59 +768,6 @@ const LaboratoryProfileForm: React.FC<LaboratoryProfileFormProps> = ({
           </div>
         </div>
 
-        {/* Services */}
-        <div className="mb-2">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="text-lg font-bold text-gray-800">
-              Laboratory Services
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowAddServiceModal(true)}
-              className="rounded-lg bg-indigo-500 px-3 py-2 text-white font-medium flex items-center gap-2"
-            >
-              <IoAdd size={18} />
-              <span>Add Service</span>
-            </button>
-          </div>
-
-          {!laboratoryServices || laboratoryServices.length === 0 ? (
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 text-center">
-              <div className="flex justify-center">
-                <MdMedicalServices className="text-gray-400" size={40} />
-              </div>
-              <div className="mt-2 text-gray-500">
-                No laboratory services added yet.
-              </div>
-              <div className="mt-1 text-sm text-gray-400">
-                Click the "Add Service" button to add your first service.
-              </div>
-            </div>
-          ) : (
-            <div>
-              {(laboratoryServices || []).map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  onUpdate={(updates) =>
-                    handleUpdateService(service.id, updates)
-                  }
-                  onDelete={() => handleRemoveService(service.id)}
-                  onAddTest={(test) => handleAddTest(service.id, test)}
-                  onUpdateTest={(testId, updates) =>
-                    handleUpdateTest(service.id, testId, updates)
-                  }
-                  onDeleteTest={(testId) =>
-                    handleRemoveTest(service.id, testId)
-                  }
-                  onUploadCoverImage={handleServiceCoverImagePick}
-                  availableCategories={availableCategories}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* ✅ Lab Cover Image */}
         <div
           className={`mb-6 rounded-xl border bg-white p-4 shadow ${

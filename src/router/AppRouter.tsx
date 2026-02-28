@@ -1,10 +1,10 @@
 // AppRouter.tsx
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
- 
+
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 
-import LandingPage from "@/pages/landing"; 
+import LandingPage from "@/pages/landing";
 
 import DoctorDetails from "@/pages/doctors";
 import LaboratoryServiceDetails from "@/pages/laboratories";
@@ -16,7 +16,6 @@ import OrdersIndexScreen from "@/pages/orders";
 import OrderDetailsScreen from "@/pages/orders/OrderDetails";
 import PublicRoute from "@/hoc/PublicRoute";
 import ProtectedRoute from "@/hoc/ProtectedRoute";
-import ToctorAIChat from "@/components/ToctorAIChat";
 import RoleMainLayout from "@/layouts/MainLayout";
 import Login from "@/pages/auth/login";
 import RegisterScreen from "@/pages/auth/register";
@@ -26,6 +25,11 @@ import DoctorsScreen from "@/pages/tabs/doctors";
 import LaboratoriesScreen from "@/pages/tabs/laboratories";
 import MedicinesScreen from "@/pages/tabs/medicines";
 import Profile from "@/pages/tabs/profile";
+import LaboratoryServicesPage from "@/pages/services/LaboratoryServicesPage";
+import UpcomingAppointmentsPage from "@/pages/appointments/UpcomingUserAppointmentsPage";
+import DoctorAIChat from "@/components/DoctorAIChat";
+import DoctorUpcomingAppointmentsPage from "@/pages/appointments/DoctorUpcomingAppointmentsPage";
+import DoctorClinicsPage from "@/pages/services/DoctorClinicsPage";
 
 // Import route guards
 
@@ -49,7 +53,20 @@ const AppRouter = () => {
             <Route path="/laboratories" element={<LaboratoriesScreen />} />
             <Route path="/medicines" element={<MedicinesScreen />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/chat-ai" element={<ToctorAIChat />} />
+            <Route path="/chat-ai" element={<DoctorAIChat />} />
+            <Route path="/lab-services" element={<LaboratoryServicesPage />} />
+            <Route path="/doctor/clinics" element={<DoctorClinicsPage />} />
+
+            {/* appointments */}
+            <Route
+              path="/user/appointments"
+              element={<UpcomingAppointmentsPage />}
+            />
+
+            <Route
+              path="/doctor/upcoming-appointments"
+              element={<DoctorUpcomingAppointmentsPage />}
+            />
 
             {/* Info / Details pages */}
             <Route path="/doctors/:id" element={<DoctorDetails />} />

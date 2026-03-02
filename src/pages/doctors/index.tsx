@@ -17,6 +17,7 @@ import { useCustomAlert } from "@/components/CustomAlert";
 import RatingDisplay from "@/components/RatingDisplay";
 import apiClient from "@/api/client";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { useUserStore } from "@/store/userStore";
 
 interface SlotsProps {
   availableSlots?: string[];
@@ -192,6 +193,7 @@ function ConsultationTypeSelector({
 export default function DoctorDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useUserStore();
 
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -265,7 +267,7 @@ export default function DoctorDetails() {
         const formattedTimeSlot = `${selectedDay} ${selectedSlot}`;
 
         const bookingData: any = {
-          doctorId: doctor?._id,
+          doctorId: user?._id,
           timeSlot: formattedTimeSlot,
           consultationType: selectedConsultationType,
           ...(isInPerson && selectedClinic

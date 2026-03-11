@@ -2,7 +2,7 @@ import axios from "axios";
 
 const baseURL =
   import.meta.env.VITE_TEST_BE_URL ||
-  "https://klinic-api-467097446026.europe-west1.run.app";
+  "https://api.klinic.cloud";
 
 const apiClient = axios.create({
   baseURL,

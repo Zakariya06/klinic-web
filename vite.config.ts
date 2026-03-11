@@ -10,9 +10,8 @@ export default defineConfig({
   resolve: { alias: { "@": path.resolve(__dirname, "src") } },
   server: {
     proxy: {
-      '/api': {
-        target: 'https://klinic-api-467097446026.europe-west1.run.app',
-        // target: 'http://localhost:8000',
+      '/api': { 
+        target: 'https://api.klinic.cloud',
         changeOrigin: true,
         secure: false, 
       },
